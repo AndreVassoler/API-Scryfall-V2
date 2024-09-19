@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Commander, Card } from './commander.schema';
 import { AxiosResponse } from 'axios';
-import { Observable, forkJoin } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { Observable, forkJoin, throwError } from 'rxjs';
+import { map, switchMap, catchError } from 'rxjs/operators';
 import { HttpService } from '@nestjs/axios';
 
 @Injectable()
@@ -18,14 +18,20 @@ export class ScryfallService {
   findCardByName(name: string): Observable<any> {
     const url = `https://api.scryfall.com/cards/named?fuzzy=${name}`;
     return this.httpService.get(url).pipe(
-      map((response: AxiosResponse) => response.data)
+      map((response: AxiosResponse) => response.data),
+      catchError(err => {
+        return throwError(() => new InternalServerErrorException('Erro ao buscar carta'));
+      })
     );
   }
 
-  findAllcommanders(): Observable<any> {
+  findAllCommanders(): Observable<any> {
     const url = 'https://api.scryfall.com/cards/search?q=is%3Acommander';
     return this.httpService.get(url).pipe(
-      map((response: AxiosResponse) => response.data)
+      map((response: AxiosResponse) => response.data),
+      catchError(err => {
+        return throwError(() => new InternalServerErrorException('Erro ao buscar comandantes'));
+      })
     );
   }
 
@@ -54,7 +60,6 @@ export class ScryfallService {
               deck: deckCards,
             });
 
-            // Salvar o comandante e o deck no banco de dados
             return forkJoin([
               this.cardModel.insertMany(deckCards),
               commander.save(),
@@ -62,10 +67,16 @@ export class ScryfallService {
               map(() => ({
                 commander,
                 deck: deckCards,
-              }))
+              })),
+              catchError(err => {
+                return throwError(() => new InternalServerErrorException('Erro ao salvar comandante e deck'));
+              })
             );
           })
         );
+      }),
+      catchError(err => {
+        return throwError(() => new InternalServerErrorException('Erro ao buscar comandante e deck'));
       })
     );
   }

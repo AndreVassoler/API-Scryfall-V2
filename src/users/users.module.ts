@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { UsersController } from './users.controller'; // Importar o controlador
 
 @Module({
   providers: [UsersService],
-  exports: [UsersService],  // Isso garante que outros módulos possam usar UsersService
+  controllers: [UsersController], // Adicionar o controlador ao módulo
+  exports: [UsersService],  
 })
 export class UsersModule {}

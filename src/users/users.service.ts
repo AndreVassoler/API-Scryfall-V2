@@ -1,34 +1,28 @@
-import { Injectable, Module } from '@nestjs/common';
-
-
+import { Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  private users: any[]; // Add a private property 'users' with type 'any[]'
+  private users: any[] = []; // Inicia com um array vazio para armazenar os usuários.
 
-  constructor() {
-    this.users = [
-      {
-        userId: 1,
-        username: 'john',
-        password: 'changeme',
-      },
-      {
-        userId: 2,
-        username: 'maria',
-        password: 'guess',
-      },
-    ];
+  constructor() {}
+
+  // Método para encontrar um usuário pelo nome de usuário
+  async findOne(username: string) {
+    return this.users.find((user: any) => user.username === username);
   }
 
-  async findOne(username: string) { // Add type annotation for the 'username' parameter
-    return this.users.find((user: any) => user.username === username); // Add type annotation for the 'user' parameter
+  // Método para criar um novo usuário com senha criptografada
+  async create(username: string, password: string) {
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const newUser = { userId: this.users.length + 1, username, password: hashedPassword };
+    this.users.push(newUser);
+    return newUser;
+  }
+
+  // Método para retornar todos os usuários (apenas para fins de teste)
+  async findAll() {
+    return this.users;
   }
 }
-
-@Module({
-    providers: [UsersService],
-    exports: [UsersService],
-  })
-  export class UsersModule {}
-  

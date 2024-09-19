@@ -4,11 +4,12 @@ import { UsersModule } from '../users/users.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { jwtConstants } from './constants';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-
-  imports:[UsersModule, 
-  
+  imports: [
+    UsersModule,
+    ConfigModule.forRoot(), // Carrega variáveis de ambiente
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
