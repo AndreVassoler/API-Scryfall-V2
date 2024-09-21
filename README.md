@@ -2,7 +2,7 @@
 
 ### Trabalho realizado por:
 
-- André Fragali Vassoler - RA: 22012716-2
+- André Fragalli Vassoler - RA: 22012716-2
 - Diogo Tizolim Cedran - RA: 22014212-2
 
  ___
