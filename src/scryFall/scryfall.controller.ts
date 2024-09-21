@@ -1,25 +1,49 @@
-import { Controller, Get, Query } from '@nestjs/common';
-import { ScryfallService } from './scryfall.service';
-import { Observable } from 'rxjs';
 
-@Controller('scryfall')
-export class ScryfallController {
+import {
+    Controller, Get, Post, Body, Query, UseGuards, Request,
+    UseInterceptors, BadRequestException
+  } from '@nestjs/common';
+  import { ScryfallService } from './scryfall.service';
+  import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+  import { CacheInterceptor } from '@nestjs/cache-manager';
+
+  
+  @Controller('decks')
+  export class ScryfallController {
     constructor(private readonly scryfallService: ScryfallService) {}
+  
 
-    @Get('card/:name') // Rota para buscar uma carta pelo nome
-    getCardByName(@Query('name') name: string): Observable<any> {
-        return this.scryfallService.findCardByName(name);
+    @UseGuards(JwtAuthGuard)
+    @Post('create')
+    createDeck(@Request() req, @Body() deck: any) {
+      return this.scryfallService.createDeck(req.user.id, deck);
     }
+  
+  
 
-    @Get('commanders') // Rota para buscar todos os comandantes
-    getAllCommanders(): Observable<any> {
-        return this.scryfallService.findAllCommanders();
+    @UseGuards(JwtAuthGuard)
+    @Get()
+    findUserDecks(@Request() req) {
+      return this.scryfallService.findDecksByUser(req.user.id);
     }
+  
 
-    @Get('commander-deck')  // Rota para buscar o comandante e o deck
-    getCommanderAndDeck(@Query('name') name: string): Observable<any> {
-        return this.scryfallService.findCommanderAndDeck(name);
+    @UseGuards(JwtAuthGuard)
+    @UseInterceptors(CacheInterceptor)
+    @Get('cached')
+    findUserDecksCached(@Request() req) {
+      return this.scryfallService.findDecksByUser(req.user.id);
     }
+  
 
-    
-}
+    @UseGuards(JwtAuthGuard)
+    @Post('import')
+    importDeck(@Body() deck: any) {
+      const isValid = this.scryfallService.validateCommanderRules(deck);
+      if (!isValid) {
+        throw new BadRequestException('O baralho não segue as regras do Commander.');
+      }
+      return this.scryfallService.saveDeck(deck);
+    }
+  }
+  

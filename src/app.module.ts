@@ -1,34 +1,19 @@
 import { Module } from '@nestjs/common';
+import { ScryfallController } from './scryFall/scryfall.controller';
+import { ScryfallService } from './scryFall/scryfall.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CommanderSchema, CardSchema } from './scryFall/commander.schema';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { ScryfallModule } from './scryfall/scryfall.module'; // Certifique-se que o caminho esteja correto
+import { CacheModule } from '@nestjs/cache-manager'; 
 
 @Module({
   imports: [
-    // ConfigModule para carregar variáveis de ambiente
-    ConfigModule.forRoot({
-      isGlobal: true, // Torna as configurações disponíveis globalmente
-    }),
-
-    // Configuração de conexão com MongoDB usando variáveis de ambiente
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGODB_URI') || 'mongodb://localhost:27017/scryfall-cards', // URI do MongoDB
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      }),
-    }),
-
-    // Módulos de funcionalidade
+    MongooseModule.forRoot('mongodb://localhost:27017/scryfall-cards'), // Conexão local
+    MongooseModule.forFeature([{ name: 'Commander', schema: CommanderSchema }, { name: 'Card', schema: CardSchema }]),
+    CacheModule.register(),
     AuthModule,
-    UsersModule,
-    ScryfallModule,
   ],
-  controllers: [], // Adicione controladores globais aqui, se necessário
-  providers: [], // Adicione provedores globais aqui, se necessário
+  controllers: [ScryfallController],
+  providers: [ScryfallService],
 })
 export class AppModule {}

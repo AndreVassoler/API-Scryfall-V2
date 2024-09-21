@@ -1,3 +1,4 @@
+
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
@@ -34,9 +35,6 @@ export class Commander extends Document {
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Card' }] })
   deck: Card[];
-
-  @Prop({ required: true })
-  userId: string;
 }
 
 export const CommanderSchema = SchemaFactory.createForClass(Commander);

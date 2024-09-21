@@ -1,4 +1,21 @@
-<p align="center">
+## Projeto para avaliação da matéria Desafio Profissional VI
+
+### Trabalho realizado por:
+
+- André Fragali Vassoler - RA: 22012716-2
+- Diogo Tizolim Cedran - RA: 22014212-2
+
+ ___
+
+ Um sistema de gerenciamento de baralhos para o jogo de cartas Magic the Gathering. Utiliza a API do [Scryfall](https://scryfall.com/docs/api) para buscar e montar decks com base nas regras de formato Commander. Os decks são compostos por 1 comandante e 99 cartas seguindo as cores permitidas. Possui autenticação e autorização de usuários, suporte para múltiplos decks por usuário, cache para otimização de listagem e importação de decks via JSON com validação de regras. O sistema permite listagem de decks do usuário logado e acesso restrito para listar todos os decks. Testes de performance foram realizados para avaliar a eficiência do cache.
+
+Tecnologias utilizadas:
+
+ - NEST, MONGODB
+
+  ___
+
+ <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
