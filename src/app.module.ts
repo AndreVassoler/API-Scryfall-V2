@@ -8,7 +8,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/scryfall-cards'), // Conexão local
+    MongooseModule.forRoot('mongodb+srv://andre:andre123@scryfall-cards.jwhau.mongodb.net/'), // Conexão local
     MongooseModule.forFeature([{ name: 'Commander', schema: CommanderSchema }, { name: 'Card', schema: CardSchema }]),
     CacheModule.register(),
     AuthModule,

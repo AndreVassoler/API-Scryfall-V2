@@ -1,4 +1,3 @@
-// auth.guard.ts
 import {
   CanActivate,
   ExecutionContext,
@@ -20,12 +19,15 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException();
     }
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: jwtConstants.secret,
-      });
-
-      // Adicionar papéis ao request.user
-      request['user'] = { ...payload, roles: payload.roles || [] };
+      const payload = await this.jwtService.verifyAsync(
+        token,
+        {
+          secret: jwtConstants.secret
+        }
+      );
+      
+      
+      request['user'] = payload;
     } catch {
       throw new UnauthorizedException();
     }
@@ -37,3 +39,4 @@ export class AuthGuard implements CanActivate {
     return type === 'Bearer' ? token : undefined;
   }
 }
+
