@@ -20,4 +20,6 @@ export class ScryfallController {
     getCommanderAndDeck(@Query('name') name: string): Observable<any> {
         return this.scryfallService.findCommanderAndDeck(name);
     }
+
+    
 }

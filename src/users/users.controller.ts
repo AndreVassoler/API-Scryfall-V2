@@ -5,7 +5,6 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // Rota para criar um novo usuário
   @Post('create')
   async createUser(
     @Body('username') username: string,
@@ -18,7 +17,6 @@ export class UsersController {
     };
   }
 
-  // Rota para listar todos os usuários (apenas para fins de teste)
   @Get()
   async getAllUsers() {
     const users = await this.usersService.findAll();

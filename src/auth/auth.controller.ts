@@ -1,35 +1,28 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Request,
-  UseGuards
-} from '@nestjs/common';
-import { AuthGuard } from './auth.guard';
-import { AuthService } from './auth.service';
+
+import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
+import { UsersService } from '../users/users.service';
+import { CreateUserDto } from './create-user.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private usersService: UsersService) {}
 
-  @HttpCode(HttpStatus.OK)
+
   @Post('login')
-  signIn(@Body() signInDto: Record<string, any>) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
+  async login(@Body() createUserDto: CreateUserDto) {
+    try {
+      return await this.usersService.login(createUserDto);
+    } catch (error) {
+      throw new BadRequestException('Usuário ou senha inválidos');
+    }
   }
 
-  @HttpCode(HttpStatus.CREATED)
   @Post('register')
-  register(@Body() registerDto: Record<string, any>) {
-    return this.authService.register(registerDto.username, registerDto.password);
-  }
-
-  @UseGuards(AuthGuard)
-  @Get('profile')
-  getProfile(@Request() req: any) {
-    return req.user;
+  async register(@Body() createUserDto: CreateUserDto) {
+    try {
+      return await this.usersService.create(createUserDto);
+    } catch (error) {
+      throw new BadRequestException('Usuário já existe ou dados inválidos');
+    }
   }
 }

@@ -3,16 +3,16 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Commander, Card } from './commander.schema';
 import { AxiosResponse } from 'axios';
-import { Observable, forkJoin, throwError } from 'rxjs';
+import { Observable, forkJoin, from, throwError } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class ScryfallService {
-  constructor(
+   constructor(
     private readonly httpService: HttpService,
-    @InjectModel(Commander.name) private commanderModel: Model<Commander>,
-    @InjectModel(Card.name) private cardModel: Model<Card>,
+    @InjectModel(Commander.name) private readonly commanderModel: Model<Commander>, // Certifique-se de que o Commander está registrado corretamente
+    @InjectModel(Card.name) private readonly cardModel: Model<Card>, // Certifique-se de que o Card está registrado corretamente
   ) {}
 
   findCardByName(name: string): Observable<any> {
@@ -79,5 +79,9 @@ export class ScryfallService {
         return throwError(() => new InternalServerErrorException('Erro ao buscar comandante e deck'));
       })
     );
+  }
+
+  findAllDecks(): Observable<Commander[]> {
+    return from(this.commanderModel.find().exec());
   }
 }
